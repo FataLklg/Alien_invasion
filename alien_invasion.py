@@ -71,6 +71,8 @@ class AlienInvasion():
 		"""Запускает новую игру при нажатии кнопки Play."""
 		button_clicked = self.play_button.rect.collidepoint(mouse_pos)
 		if button_clicked and not self.stats.game_active:
+			# Сброс игровых настроек.
+			self.settings.initialize_dynamic_settings()
 			self._start_game()
 	
 	def _start_game(self):
@@ -149,6 +151,7 @@ class AlienInvasion():
 		if not self.aliens:
 			self.bullets.empty()
 			self._create_fleet()
+			self.settings.increase_speed()
 
 	def _create_fleet(self):
 		"""Создание флота пришельцев."""
