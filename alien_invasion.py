@@ -254,7 +254,7 @@ class AlienInvasion():
 		for number_row in range(int(number_rows)):
 			for star_number in range(int(number_stars_x)):
 				self._create_star(star_number, number_row)
-	
+
 	def _create_drop(self, number_drop):
 		"""Создаёт каплю и определяет местоположение капель."""
 		drop = Drop(self)
