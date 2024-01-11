@@ -83,6 +83,8 @@ class AlienInvasion():
 		# Сброс игровой статистики.
 		self.stats.reset_stats()
 		self.stats.game_active = True
+		self.sb.prep_level()
+		self.sb._prep_score()
 
 		# Очистка списка пришельцев и снарядов.
 		self.aliens.empty()
@@ -98,6 +100,7 @@ class AlienInvasion():
 	def _check_keydown_events(self, event):
 		"""Реагирует на нажатие клавиш."""
 		if event.key == pygame.K_RETURN and not self.stats.game_active:
+			self.settings.initialize_dynamic_settings()
 			self._start_game()
 		if event.key == pygame.K_RIGHT:
 			self.ship.moving_right = True
@@ -153,6 +156,7 @@ class AlienInvasion():
 			for aliens in collisions.values():
 				self.stats.score += self.settings.alien_points * len(aliens)
 			self.sb._prep_score()
+			self.sb.check_high_score()
 
 		# Если весь флот пришельцев уничтожен:
 		# Уничтожает существующие снаряды и создаёт новый флот.
@@ -160,6 +164,10 @@ class AlienInvasion():
 			self.bullets.empty()
 			self._create_fleet()
 			self.settings.increase_speed()
+
+			# Увеличение уровня.
+			self.stats.level += 1
+			self.sb.prep_level()
 
 	def _create_fleet(self):
 		"""Создание флота пришельцев."""
