@@ -18,8 +18,8 @@ class Drop(Sprite):
         self.image = pygame.transform.scale(self.image, self.image_size)
 
         # Координаты появления капли.
-        self.rect.x = randint(-100, 100) #self.rect.width
-        self.rect.y = randint(-500, -10)#self.rect.height
+        self.rect.x = randint(-100, 100)
+        self.rect.y = randint(-500, -10)
 
         # Сохранение точной горизонтальной позиции капли.
         self.x = float(self.rect.x)
