@@ -140,16 +140,16 @@ class AlienInvasion():
 		"""Загрузка и настройка звуковых файлов."""
 		shot_sound_file = resource_path('music/blaster.ogg')
 		self.shot_sound = pygame.mixer.Sound(shot_sound_file)
-		self.shot_sound.set_volume(0.5)
+		self.shot_sound.set_volume(self.settings.shot_volume)
 		explosion_sound = resource_path('music/explosion.ogg')
 		self.explosion_sound = pygame.mixer.Sound(explosion_sound)
-		self.explosion_sound.set_volume(0.5)
+		self.explosion_sound.set_volume(self.settings.explosion_volume)
 	
 	def _play_music(self):
 		"""Проигрывает фоновую музыку в игре."""
 		music_path = resource_path('music/cosmo.mp3')
 		pygame.mixer.music.load(music_path)
-		pygame.mixer.music.set_volume(0.3)
+		pygame.mixer.music.set_volume(self.settings.music_volume)
 		pygame.mixer.music.play(-1)
 
 	def _fire_bullet(self):

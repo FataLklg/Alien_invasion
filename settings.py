@@ -34,6 +34,11 @@ class Settings():
 		# Темп роста стоимости пришельцев.
 		self.score_scale = 1.5
 
+		# Настройки звука в игре.
+		self.music_volume = 0.3
+		self.shot_volume = 0.5
+		self.explosion_volume = 0.5
+
 		self.initialize_dynamic_settings()
 
 	def initialize_dynamic_settings(self):
