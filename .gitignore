@@ -160,3 +160,9 @@ cython_debug/
 #.idea/
 
 __pycache__/
+images/backup
+dist/
+build/
+dist
+build
+record.txt

@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 from random import randint, choice
 
+from utils import resource_path
+
 
 class Star(Sprite):
 	"""Класс звезды."""
@@ -11,7 +13,16 @@ class Star(Sprite):
 		self.screen = ai_game.screen
 		self.settings = ai_game.settings
 
-		self.image = pygame.image.load('images/star.bmp')
+		# Словарь с размерами звёзд.
+		STAR_IMG_SIZES = {'small': (30, 30),
+						  'medium': (40, 40),
+						  'big': (50, 50)}
+		star_img = resource_path('images/star.bmp')
+		self.image = pygame.image.load(star_img)
+		self.image = pygame.transform.scale(self.image,
+									  		choice((STAR_IMG_SIZES['small'],
+											STAR_IMG_SIZES['medium'],
+											STAR_IMG_SIZES['big'])))
 		self.rect = self.image.get_rect()
 
 		self.rect.x = self.rect.width

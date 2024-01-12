@@ -13,6 +13,7 @@ from scoreboard import Scoreboard
 from settings import Settings
 from ship import Ship
 from star import Star
+from utils import save_record_to_file
 
 
 class AlienInvasion():
@@ -61,6 +62,7 @@ class AlienInvasion():
 		"""Обрабатывает нажатия клавиш клавиатуры и мыши."""
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
+				save_record_to_file(self.stats.high_score)
 				sys.exit()
 			elif event.type == pygame.KEYDOWN:
 				self._check_keydown_events(event)
@@ -103,17 +105,20 @@ class AlienInvasion():
 		if event.key == pygame.K_RETURN and not self.stats.game_active:
 			self.settings.initialize_dynamic_settings()
 			self._start_game()
-		if event.key == pygame.K_RIGHT:
-			self.ship.moving_right = True
-		elif event.key == pygame.K_LEFT:
-			self.ship.moving_left = True
-		elif event.key == pygame.K_UP:
-			self.ship.moving_up = True
-		elif event.key == pygame.K_DOWN:
-			self.ship.moving_down = True
-		elif event.key == pygame.K_SPACE:
-			self._fire_bullet()
-		elif event.key == pygame.K_ESCAPE:
+		if self.stats.game_active:
+			if event.key == pygame.K_RIGHT:
+				self.ship.moving_right = True
+			elif event.key == pygame.K_LEFT:
+				self.ship.moving_left = True
+			# Просто ради эксперимента добавлены реакции на UP и DOWN.
+			elif event.key == pygame.K_UP:
+				self.ship.moving_up = True
+			elif event.key == pygame.K_DOWN:
+				self.ship.moving_down = True
+			elif event.key == pygame.K_SPACE:
+				self._fire_bullet()
+		if event.key == pygame.K_ESCAPE:
+			save_record_to_file(self.stats.high_score)
 			sys.exit()
 
 	def _check_keyup_events(self, event):
@@ -191,7 +196,7 @@ class AlienInvasion():
 	def _create_alien(self, alien_number, row_number):
 		"""Создание пришельца и размещение его в ряду."""
 		alien = Alien(self)
-		alien_width, alien_height = alien.rect.size
+		alien_width = alien.rect.size[0]
 		alien.x = alien_width + 1.7 * alien_width * alien_number
 		alien.rect.x = alien.x
 		alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
@@ -199,7 +204,7 @@ class AlienInvasion():
 	
 	def _check_aliens_bottom(self):
 		"""Проверяет, добрались ли пришельцы до нижнего края экрана."""
-		screen_rect =self.screen.get_rect()
+		screen_rect = self.screen.get_rect()
 		for alien in self.aliens.sprites():
 			if alien.rect.bottom >= screen_rect.bottom:
 				self._ship_hit()
@@ -236,7 +241,7 @@ class AlienInvasion():
 	def _create_star(self, star_number, row_number):
 		"""Создание звезды и определение местоположения звезды."""
 		star = Star(self)
-		star_width, star_height = star.rect.size
+		star_width = star.rect.size[0]
 		star.x = star_width + randint(3, 7) * star_width * star_number
 		star.rect.x = star.x
 		star.rect.y = star.rect.height + randint(3, 7) * star.rect.height * row_number

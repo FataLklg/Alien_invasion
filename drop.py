@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 from random import randint
 
+from utils import resource_path
+
 
 class Drop(Sprite):
     """Класс капель воды."""
@@ -11,7 +13,8 @@ class Drop(Sprite):
         self.settings = ai_game.settings
 
         # Загрузка изображения капли воды.
-        self.image = pygame.image.load('images/drop.bmp')
+        drop_img = resource_path('images/drop.bmp')
+        self.image = pygame.image.load(drop_img)
         self.rect = self.image.get_rect()
         # Устанавливает разный размер каплям.
         self.image_size = (randint(5, 15), randint(10, 20))
