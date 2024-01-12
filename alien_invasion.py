@@ -49,12 +49,7 @@ class AlienInvasion():
 		self.play_button = Button(self, "Play")
 
 		# Инициализация звуков стрельбы и взрыва при попадании.
-		shot_sound_file = resource_path('music/blaster.ogg')
-		self.shot_sound = pygame.mixer.Sound(shot_sound_file)
-		self.shot_sound.set_volume(0.5)
-		explosion_sound = resource_path('music/explosion.ogg')
-		self.explosion_sound = pygame.mixer.Sound(explosion_sound)
-		self.explosion_sound.set_volume(0.5)
+		self._prep_sounds()
 
 	def run_game(self):
 		"""Запуск основного цикла игры."""
@@ -126,7 +121,6 @@ class AlienInvasion():
 				self.ship.moving_down = True
 			elif event.key == pygame.K_SPACE:
 				self._fire_bullet()
-				self.shot_sound.play()
 		if event.key == pygame.K_ESCAPE:
 			save_record_to_file(self.stats.high_score)
 			sys.exit()
@@ -142,6 +136,15 @@ class AlienInvasion():
 		elif event.key == pygame.K_DOWN:
 			self.ship.moving_down = False
 	
+	def _prep_sounds(self):
+		"""Загрузка и настройка звуковых файлов."""
+		shot_sound_file = resource_path('music/blaster.ogg')
+		self.shot_sound = pygame.mixer.Sound(shot_sound_file)
+		self.shot_sound.set_volume(0.5)
+		explosion_sound = resource_path('music/explosion.ogg')
+		self.explosion_sound = pygame.mixer.Sound(explosion_sound)
+		self.explosion_sound.set_volume(0.5)
+	
 	def _play_music(self):
 		"""Проигрывает фоновую музыку в игре."""
 		music_path = resource_path('music/cosmo.mp3')
@@ -150,10 +153,14 @@ class AlienInvasion():
 		pygame.mixer.music.play(-1)
 
 	def _fire_bullet(self):
-		"""Создание нового снаряда и включение его в группу bullets."""
+		"""
+		Создание нового снаряда и включение его в группу bullets.
+		Проигрывание звука выстрела.
+		"""
 		if len(self.bullets) < self.settings.bullets_allowed:
 			new_bullet = Bullet(self)
 			self.bullets.add(new_bullet)
+			self.shot_sound.play()
 
 	def _update_bullets(self):
 		"""Обновляет позиции снарядов и удаляет старые снаряды."""
