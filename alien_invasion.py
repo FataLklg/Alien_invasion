@@ -13,11 +13,13 @@ from scoreboard import Scoreboard
 from settings import Settings
 from ship import Ship
 from star import Star
-from utils import save_record_to_file
+from utils import resource_path, save_record_to_file
 
 
 class AlienInvasion():
 	"""Класс управления ресурсами и поведением игры."""
+
+	pygame.mixer.pre_init(44100, -16, 1, 512)
 
 	def __init__(self):
 		"""Инициализирует игру и создаёт игровые ресурсы."""
@@ -41,9 +43,18 @@ class AlienInvasion():
 		self._create_drops_x()
 		self._create_stars_sky()
 		self._create_fleet()
+		self._play_music()
 
 		# Создание кнопки Play.
 		self.play_button = Button(self, "Play")
+
+		# Инициализация звуков стрельбы и взрыва при попадании.
+		shot_sound_file = resource_path('music/blaster.ogg')
+		self.shot_sound = pygame.mixer.Sound(shot_sound_file)
+		self.shot_sound.set_volume(0.5)
+		explosion_sound = resource_path('music/explosion.ogg')
+		self.explosion_sound = pygame.mixer.Sound(explosion_sound)
+		self.explosion_sound.set_volume(0.5)
 
 	def run_game(self):
 		"""Запуск основного цикла игры."""
@@ -115,6 +126,7 @@ class AlienInvasion():
 				self.ship.moving_down = True
 			elif event.key == pygame.K_SPACE:
 				self._fire_bullet()
+				self.shot_sound.play()
 		if event.key == pygame.K_ESCAPE:
 			save_record_to_file(self.stats.high_score)
 			sys.exit()
@@ -129,6 +141,13 @@ class AlienInvasion():
 			self.ship.moving_up = False
 		elif event.key == pygame.K_DOWN:
 			self.ship.moving_down = False
+	
+	def _play_music(self):
+		"""Проигрывает фоновую музыку в игре."""
+		music_path = resource_path('music/cosmo.mp3')
+		pygame.mixer.music.load(music_path)
+		pygame.mixer.music.set_volume(0.3)
+		pygame.mixer.music.play(-1)
 
 	def _fire_bullet(self):
 		"""Создание нового снаряда и включение его в группу bullets."""
@@ -159,6 +178,7 @@ class AlienInvasion():
 		if collisions:
 			for aliens in collisions.values():
 				self.stats.score += self.settings.alien_points * len(aliens)
+				self.explosion_sound.play()
 			self.sb._prep_score()
 			self.sb.check_high_score()
 
