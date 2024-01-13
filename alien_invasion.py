@@ -2,9 +2,10 @@ import sys
 from time import sleep
 
 import pygame
-from random import randint
+from random import randint, choice
 
 from alien import Alien
+from alien_bullet import AlienBullet
 from bullet import Bullet
 from button import Button
 from drop import Drop
@@ -39,6 +40,7 @@ class AlienInvasion():
 		self.aliens = pygame.sprite.Group()
 		self.stars = pygame.sprite.Group()
 		self.drops = pygame.sprite.Group()
+		self.alien_bullets = pygame.sprite.Group()
 
 		self._create_drops_x()
 		self._create_stars_sky()
@@ -96,6 +98,7 @@ class AlienInvasion():
 		# Очистка списка пришельцев и снарядов.
 		self.aliens.empty()
 		self.bullets.empty()
+		self.alien_bullets.empty()
 
 		# Создание нового флота и размещение корабля в центре.
 		self._create_fleet()
@@ -161,18 +164,31 @@ class AlienInvasion():
 			new_bullet = Bullet(self)
 			self.bullets.add(new_bullet)
 			self.shot_sound.play()
+		
+	def _alien_fire_bullets(self):
+		"""Создание снаряда пришельцев."""
+		if len(self.alien_bullets) < self.settings.alien_bullets_allowed:
+			new_alien_bullet = AlienBullet(self)
+			self.alien_bullets.add(new_alien_bullet)
 
 	def _update_bullets(self):
 		"""Обновляет позиции снарядов и удаляет старые снаряды."""
 		# Обновление позиции снарядов.
+		screen_rect = self.screen.get_rect()
 		self.bullets.update()
+		self.alien_bullets.update()
 
 		# Удаление снарядов, вышедших за край экрана.
 		for bullet in self.bullets.copy():
 			if bullet.rect.bottom <= 0:
 				self.bullets.remove(bullet)
 		
+		for bullet in self.alien_bullets.copy():
+			if bullet.rect.top >= screen_rect.bottom:
+				self.alien_bullets.remove(bullet)
+		
 		self._check_bullet_alien_collision()
+		self._check_alien_bullet_ship_collision()
 
 	def _check_bullet_alien_collision(self):
 		"""Обработка коллизий снарядов с пришельцами."""
@@ -193,6 +209,15 @@ class AlienInvasion():
 		# Уничтожает существующие снаряды и создаёт новый флот.
 		if not self.aliens:
 			self.start_new_level()
+
+	def _check_alien_bullet_ship_collision(self):
+		"""Обработка коллизий снарядов пришельцев с кораблём игрока."""
+		collisions = pygame.sprite.spritecollideany(
+			self.ship, self.alien_bullets
+			)
+		
+		if collisions:
+			self._ship_hit()
 	
 	def start_new_level(self):
 		"""
@@ -260,6 +285,7 @@ class AlienInvasion():
 		"""
 		self._check_fleet_edges()
 		self.aliens.update()
+		self._alien_fire_bullets()
 
 		# Проверка коллизий "корабль - пришельцы".
 		if pygame.sprite.spritecollideany(self.ship, self.aliens):
@@ -354,6 +380,8 @@ class AlienInvasion():
 		self.ship.blitme()
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet()
+		for alien_bullet in self.alien_bullets.sprites():
+			alien_bullet.draw_bullet()
 		self.aliens.draw(self.screen)
 
 		# Вывод информации о счёте
